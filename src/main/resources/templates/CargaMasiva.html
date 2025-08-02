@@ -1,0 +1,146 @@
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+    <body layout:fragment="body" style="background-color: cadetblue;">
+
+        <br><br>
+
+        <div class="container d-flex justify-content-center">
+            <div class="card shadow-sm p-4" style="max-width: 600px; width: 100%;">
+
+                <h4 class="text-center mb-4">Carga Masiva de Archivos</h4>
+
+                <!-- Botón para mostrar el formulario -->
+                <div class="text-center">
+                    <button id="mostrarFormulario" class="btn btn-primary mb-3">Mostrar Formulario</button>
+                </div>
+
+                <!-- Botones de archivos -->
+                <div id="botones" class="row g-3 justify-content-center mb-3" style="display: none;">
+                    <div class="col-md-6 d-grid">
+                        <button class="btn btn-outline-success" id="btnExcel">
+                            <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" width="20" class="me-2"> .xlsx
+                        </button>
+                    </div>
+                    <div class="col-md-6 d-grid">
+                        <button class="btn btn-outline-primary" id="btnTxt">
+                            <img src="https://img.icons8.com/color/48/000000/notepad.png" width="20" class="me-2"> .txt
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulario de carga -->
+                <div id="formularioArchivo" style="display: none;">
+                    <form th:action="@{/usuario/cargamasiva}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="file" id="archivo" name="archivo" class="form-control" accept=".xlsx,.txt">
+                        </div>
+                        <div class="text-center mb-2">
+                            <button type="submit" class="btn" id="cargaMasiva">Subir Archivo</button>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" id="btnVolver" class="btn btn-secondary btn-sm">Elegir otro formato</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal de errores -->
+        <div class="modal fade" id="erroresModal" tabindex="-1" aria-labelledby="erroresModalLabel" aria-hidden="true"
+             th:if="${hayErrores}" th:fragment="modalErrores">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="erroresModalLabel">Lista de Errores</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fila</th>
+                                    <th>Texto</th>
+                                    <th>Mensaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="error : ${listaErrores}">
+                                    <td th:text="${error.fila}">1</td>
+                                    <td th:text="${error.texto}">valor</td>
+                                    <td th:text="${error.descripcion}">mensaje</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                let tipoArchivo = "";
+
+                // Mostrar botones
+                $('#mostrarFormulario').on('click', function () {
+                    $(this).hide();
+                    $('#botones').css('display', 'flex');
+                });
+
+                // Botón Excel
+                $('#btnExcel').on('click', function () {
+                    tipoArchivo = "xlsx";
+                    $('#formularioArchivo').show();
+                    $('#archivo').attr('accept', '.xlsx');
+                    $('#cargaMasiva').removeClass().addClass('btn btn-success');
+                    $('#btnExcel, #btnTxt').hide();
+                });
+
+                // Botón TXT
+                $('#btnTxt').on('click', function () {
+                    tipoArchivo = "txt";
+                    $('#formularioArchivo').show();
+                    $('#archivo').attr('accept', '.txt');
+                    $('#cargaMasiva').removeClass().addClass('btn btn-primary');
+                    $('#btnExcel, #btnTxt').hide();
+                });
+
+                // Botón para volver a elegir
+                $(document).on('click', '#btnVolver', function () {
+                    $('#btnExcel, #btnTxt').show();
+                    $('#formularioArchivo').hide();
+                    $('#archivo').val('');
+                    tipoArchivo = '';
+                });
+
+                // Validar extensión de archivo
+                $('#archivo').on('change', function () {
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        const fileExtension = fileName.split('.').pop().toLowerCase();
+
+                        if (fileExtension !== tipoArchivo) {
+                            alert("Selecciona un archivo tipo: ." + tipoArchivo.toLowerCase());
+                            $(this).val('');
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <script th:if="${hayErrores}">
+            $(document).ready(function () {
+                $('#erroresModal').modal('show');
+            });
+        </script>
+
+
+    </body>
+</html>

@@ -1,0 +1,2 @@
+|Nombre|ApellidoPaterno|ApellidoMaterno|FechaNacimiento|Telefono|Email|Username|Password|Sexo|Celular|CURP|idRoll|Imagen|Estatus|Calle|NumeroInterior|NumeroExterior|idColonia|
+|Ana|Lopez|Garcia|1990-05-15|1234567890|ana.lopez@example.com|anaLG|password123|M|1234567890|LOGA900515MCLPRA81|2|ana.jpg|1|Veracruz|101|5|2|

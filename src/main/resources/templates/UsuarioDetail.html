@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+    <body layout:fragment="body" style="background-color: cadetblue;">
+        <div class="container mt-4">
+            <div class="p-4 bg-white rounded shadow">
+                <h5 class="mb-4 text-center">Usuario</h5>
+                <h1 class="mb-4 text-center"  th:text="|${usuarioDireccion.Usuario.Nombre} ${usuarioDireccion.Usuario.ApellidoPaterno} ${usuarioDireccion.Usuario.ApellidoMaterno}|"> </h1>
+                </br>
+                <!-- Datos del Usuario -->
+                <div class="row mb-3">
+                    <!-- Foto -->
+                    <div class="col-md-3 text-center">
+                        <img 
+                            alt="Foto del usuario" 
+                            class="profile-img" style=" max-width: 200px" 
+                            th:src="${usuarioDireccion.Usuario.Imagen == null } ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' :  'data:image/png;base64,'+ ${usuarioDireccion.Usuario.Imagen}"  >
+                    </div>
+
+                    <!-- Información del usuario -->
+                    <div class="col-md-7">
+                        <div class="row">
+                            <!-- Columna izquierda -->
+                            <div class="col-md-6">
+                                <p><strong>Email:</strong> <span th:text="${usuarioDireccion.Usuario.Email}"></span></p>
+                                <p><strong>Username:</strong> <span th:text="${usuarioDireccion.Usuario.Username}"></span></p>
+                                <p><strong>Tel:</strong> <span th:text="${usuarioDireccion.Usuario.Telefono}"></span></p>
+                            </div>
+
+                            <!-- Columna derecha -->
+                            <div class="col-md-6">
+                                <p><strong>Cel:</strong> <span th:text="${usuarioDireccion.Usuario.Celular}"></span></p>
+                                <p><strong>CURP:</strong> <span th:text="${usuarioDireccion.Usuario.CURP}"></span></p>
+                                <p><strong>Rol:</strong> <span th:text="${usuarioDireccion.Usuario.Roll.Roll}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <a class="btn btn-warning" th:href="@{/usuario/formeditable?idUsuario=} + ${usuarioDireccion.Usuario.idUsuario}" > Editar Usuario<i class="bi bi-pencil-square"></i></a>
+                </div>
+                </br>
+                </br>  
+
+                <!-- Tabla de Direcciones -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Direcciones del Usuario</h4>
+                    <a  class="btn btn-outline-success" th:href="@{/usuario/formeditable?idUsuario=}+${usuarioDireccion.Usuario.idUsuario}+'&idDireccion=0'"><i class="bi bi-floppy2-fill"></i> Agregar Dirección</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Calle</th>
+                                <th>Número Interior</th>
+                                <th>Número Exterior</th>
+                                <th>Editar</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="direccion : ${usuarioDireccion.Direcciones}">
+                                <td th:text="${direccion.Calle}"></td>
+                                <td th:text="${direccion.NumeroInterior}"></td>
+                                <td th:text="${direccion.NumeroExterior}"></td>
+                                <td>
+                                    <a class="btn btn-warning btn-sm" th:href="@{/usuario/formeditable?idUsuario=} + ${usuarioDireccion.Usuario.idUsuario}+ '&idDireccion=' + ${direccion.idDireccion}" ><i class="bi bi-pencil"></i></a>
+                                </td>
+                                <td>
+
+                                    <a  class="btn btn-danger btn-sm" th:href="@{/usuario/deletedireccion(idDireccion=${direccion.idDireccion}, idUsuario=${usuarioDireccion.Usuario.idUsuario})}"
+                                        onclick="return confirm('¿Eliminar esta dirección?')"
+                                        ><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+

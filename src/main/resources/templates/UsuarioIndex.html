@@ -1,0 +1,176 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+    <body layout:fragment="body" style="background-color: cadetblue;" >
+        <div class="container text-center mt-5">
+
+            <!-- CONTENEDOR DE BÚSQUEDA -->
+            <div class="mx-auto p-3 border rounded bg-light mb-3 " style="max-width: 2100px;">
+                <form method="post" th:action="@{/usuario}" th:object="${usuario}">
+                    <h5 class="mb-3">Buscar Usuario</h5>
+                    <div class="row justify-content-center g-4">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Nombre" name="nombre">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Apellido Paterno" name="apellidoPaterno">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Apellido Materno" name="apellidoMaterno">
+                        </div>
+                        <div class="col-md-2">
+                            <select id="ddlroll" class="form-select" aria-label="Default select example" th:field="*{roll.idRoll}">
+                                <option value=0 selected>Selecciona el Roll</option>
+                                <option th:each="roll : ${rolls}" th:value="${roll.idRoll}" th:text="${roll.Roll}" ></option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-left ms-5">
+                            <input type="hidden" name="estatus" id="estatusInput" value="0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="estatusSwitch" value="1">
+                                <label class="form-check-label" for="estatusSwitch">Estatus</label>
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 d-grid gap-2 d-md-block">
+                            <button type="submit" class="btn btn-outline-primary">
+                                Buscar <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- CONTENEDOR ORIGINAL -->
+            <div class="mx-auto p-5 border rounded bg-white" style="max-width: 2100px;">
+                <br>
+                <a th:href="@{/usuario/form/0}" class="btn btn-outline-success">
+                    Agregar <i class="bi bi-person-plus-fill"></i>
+                </a>
+                <br><br>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Editar</th>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Contactos</th>
+                                <th>Username</th>
+                                <th>Roll</th>
+                                <th>Direccion</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="usuarioDireccion : ${usuarioDireccion}">
+                                <td>
+                                    <a th:href="@{'usuario/form/'+${usuarioDireccion.Usuario.idUsuario}}" class="btn btn-warning">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <label class="form-check-label estatus-label" data-idusuario="${usuarioDireccion.Usuario.idUsuario}">
+                                        Estatus
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input estatus-switch" type="checkbox" 
+                                               data-idusuario="${usuarioDireccion.Usuario.idUsuario}" 
+                                               th:checked="${usuarioDireccion.Usuario.Estatus == 1}">
+                                        <label class="form-check-label" 
+                                               th:text="${usuarioDireccion.Usuario.Estatus == 1 ? 'Activo' : 'Inactivo'}"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <img style="width: 70px"
+                                         th:src="${usuarioDireccion.Usuario.Imagen == null } ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' :  'data:image/png;base64,'+ ${usuarioDireccion.Usuario.Imagen}">
+                                </td>
+                                <td th:text="|${usuarioDireccion.Usuario.Nombre} ${usuarioDireccion.Usuario.ApellidoPaterno} ${usuarioDireccion.Usuario.ApellidoMaterno}|"></td>
+                                <td th:text="|${usuarioDireccion.Usuario.Telefono}, ${usuarioDireccion.Usuario.Celular}, ${usuarioDireccion.Usuario.Email}|"></td>
+                                <td th:text="|${usuarioDireccion.Usuario.Username}|"></td>
+                                <td th:text="|${usuarioDireccion.Usuario.Roll.Roll}|"></td>
+                                <td>
+                                    <ul>
+                                        <li th:each="direccion : ${usuarioDireccion.Direcciones}" th:text="(${direccion.Calle} == null) ? 'Sin direccion' : |${direccion.Calle}, ${direccion.NumeroInterior}, ${direccion.NumeroExterior}|"></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <a class="btn btn-danger" th:href="@{'/usuario/delete/' + ${usuarioDireccion.Usuario.idUsuario}}"
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
+                                        <i class="bi bi-person-dash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            $('#CheckActivo').change(function () {
+                if (this.checked) {
+                    $.ajax({
+                        url: '/usuario/Activo?idUsuario=' + $("#idUsuario").val() + "&Estatus=" + 1,
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function () {
+                            $('#Activo').text('Activo');
+                        }, error: function () {
+                            alert("Ocurrio un error, intentalo mas tarde!");
+                            $("#CheckActivo").prop("checked", false);
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: '/usuario/Activo?idUsuario=' + $("#idUsuario").val() + "&Estatus=" + 0,
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function () {
+                            $('#Activo').text('Inactivo');
+                        }, error: function () {
+                            alert("Ocurrio un error, intentalo mas tarde!");
+                            $("#CheckActivo").prop("checked", true);
+                        }
+                    });
+                }
+            });
+        </script>
+        <script>
+            document.getElementById('estatusSwitch').addEventListener('change', function () {
+                document.getElementById('estatusInput').value = this.checked ? '1' : '0';
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+                $('.estatus-switch').change(function () {
+                    const checkbox = $(this);
+                    const idUsuario = checkbox.data('idusuario');
+                    const nuevoEstatus = checkbox.is(':checked') ? 1 : 0;
+                    const label = checkbox.closest('td').find('label.form-check-label').last();
+
+                    $.ajax({
+                        url: '/usuario/Activo',
+                        type: 'POST',
+                        data: {idUsuario: idUsuario, Estatus: nuevoEstatus},
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result.correct) {
+                                label.text(nuevoEstatus === 1 ? 'Activo' : 'Inactivo');
+                            } else {
+                                alert('Error: ' + result.errorMessage);
+                                // Revertir el switch
+                                checkbox.prop('checked', !checkbox.is(':checked'));
+                            }
+                        },
+                        error: function () {
+                            alert('Error en la conexión. Inténtalo más tarde.');
+                            checkbox.prop('checked', !checkbox.is(':checked'));
+                        }
+                    });
+                });
+            });
+        </script>
+
+    </body>
+</html>

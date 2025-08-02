@@ -1,0 +1,2 @@
+|Nombre|ApellidoPaterno|ApellidoMaterno|FechaNacimiento|Telefono|Email|Username|Password|Sexo|Celular|CURP|IdRoll|Imagen|
+|Pepe|Perez|Lopez|2000-05-20|1111111111|correo@gmal.com|juan123|scruz123|M|1111111111|CULS030117HMCRPBA4|3|x.jpg|
