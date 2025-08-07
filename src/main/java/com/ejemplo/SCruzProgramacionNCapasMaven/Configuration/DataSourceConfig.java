@@ -19,8 +19,7 @@ public class DataSourceConfig {
         dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:orcl");
         dataSource.setUsername("SCruzProgramacionNCapas");
         dataSource.setPassword("password1");
-        
-//        return dataSource(); --- Esto era lo que tenías  
+         
         return dataSource;
     }
     

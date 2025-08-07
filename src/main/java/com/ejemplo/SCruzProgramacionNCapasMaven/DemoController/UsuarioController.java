@@ -16,6 +16,7 @@ import com.ejemplo.SCruzProgramacionNCapasMaven.ML.ResultValidaDatos;
 import com.ejemplo.SCruzProgramacionNCapasMaven.ML.Roll;
 import com.ejemplo.SCruzProgramacionNCapasMaven.ML.Usuario;
 import com.ejemplo.SCruzProgramacionNCapasMaven.ML.UsuarioDireccion;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -45,6 +46,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -723,6 +726,15 @@ public class UsuarioController {
     @ResponseBody
     public Result GetDireccionByCP(@PathVariable String cp) {
         return getJPADAOImplementation.GetDireccionByCP(cp);
+    }
+
+    @GetMapping("/usuario/check-session")
+    @ResponseBody
+    public ResponseEntity<String> checkSession(HttpSession session) {
+        if (session == null || session.getAttribute("SPRING_SECURITY_CONTEXT") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sesión caducada");
+        }
+        return ResponseEntity.ok("Sesión activa");
     }
 
 }
